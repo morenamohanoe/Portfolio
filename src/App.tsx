@@ -505,7 +505,7 @@ export default function App() {
             <ul ref={horizontalWrapperRef} className="flex gap-12 items-center pb-24 pr-24 list-none">
               {projects.map((proj, i) => (
                 <li key={i}>
-                  <div 
+                  <article 
                     onClick={() => openModal(proj)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -515,7 +515,7 @@ export default function App() {
                     }}
                     role="button"
                     tabIndex={0}
-                    aria-label={`View details for ${proj.name}`}
+                    aria-label={`View details for ${proj.name} project`}
                     aria-haspopup="dialog"
                     className="w-[85vw] md:w-[40vw] shrink-0 group relative cursor-pointer transition-all duration-700 ease-out hover:scale-[1.02] hover:-translate-y-4 p-6 md:p-8 rounded-[2rem] bg-[#050505] border border-white/5 hover:border-transparent alien-border alien-border-glow shadow-2xl z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00ffcc] overflow-hidden"
                   >
@@ -537,10 +537,11 @@ export default function App() {
                       <div className="absolute inset-0 bg-gradient-to-br from-[#111] to-[#010101] transition-transform duration-1000 ease-out group-hover:scale-110" />
                       
                       {/* The Website Image with creative filters */}
-                      <div 
-                        className="absolute inset-0 bg-cover bg-top bg-no-repeat opacity-40 grayscale contrast-150 mix-blend-luminosity group-hover:opacity-90 group-hover:grayscale-0 group-hover:contrast-100 group-hover:mix-blend-normal transition-all duration-700 ease-out scale-105 group-hover:scale-100"
-                        style={{ backgroundImage: `url(${proj.img})` }}
-                        aria-hidden="true"
+                      <img 
+                        loading="lazy"
+                        src={proj.img}
+                        alt={`${proj.name} - Digital architectural showcase`}
+                        className="absolute inset-0 w-full h-full object-cover object-top opacity-40 grayscale contrast-150 mix-blend-luminosity group-hover:opacity-90 group-hover:grayscale-0 group-hover:contrast-100 group-hover:mix-blend-normal transition-all duration-700 ease-out scale-105 group-hover:scale-100"
                       />
                       
                       {/* Alien scanning effect overlay */}
@@ -570,7 +571,7 @@ export default function App() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </article>
                 </li>
               ))}
             </ul>
@@ -700,7 +701,7 @@ export default function App() {
 
                   <div className="md:col-span-5 space-y-6 md:space-y-8">
                     <div className="relative aspect-video md:aspect-square bg-[#0a0a0a] rounded-sm overflow-hidden border border-white/10 group">
-                      <img src={selectedProject.img} alt={selectedProject.name} className="w-full h-full object-cover grayscale brightness-125" />
+                      <img src={selectedProject.img} alt={`${selectedProject.name} - Case study visual representation`} className="w-full h-full object-cover grayscale brightness-125" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                       <div className="absolute bottom-4 left-4 right-4">
                         <div className="text-[8px] font-mono text-[#00ffcc] mb-1 opacity-60">VISUAL_THUMBNAIL</div>
