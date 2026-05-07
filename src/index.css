@@ -1,0 +1,335 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", "Inter", sans-serif;
+  --color-cinematic: #050505;
+}
+
+:root {
+  background-color: var(--color-cinematic);
+  color: #fff;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: #050505;
+}
+
+/* Subtle grain overlay */
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Hide scrollbar for a cleaner cinematic look */
+::-webkit-scrollbar {
+  display: none;
+}
+* {
+  scrollbar-width: none;
+}
+
+/* Alienware Core Styles */
+.alien-hud-grid {
+  background-image: 
+    linear-gradient(rgba(0, 255, 204, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 204, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.alien-hex-bg {
+  background-color: #050505;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='hexagons' fill='%2300ffcc' fill-opacity='0.02' fill-rule='nonzero'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9l11-6.35 11 6.35V30.1l-11 6.35-11-6.35V17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31L17 42.65V49h-2zM28 17.3l-11 6.35v12.69l11 6.35V17.3zM0 17.3l11 6.35v12.69L0 42.65V17.3z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.alien-button {
+  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+}
+
+.cursor-hidden {
+  cursor: none !important;
+}
+
+.alien-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  background: #00ffcc;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  transition: transform 0.1s ease-out, opacity 0.3s ease-out;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 15px #00ffcc, 0 0 30px rgba(0, 255, 204, 0.4);
+}
+
+.alien-cursor-outline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 44px;
+  height: 44px;
+  border: 1px border;
+  border-color: #00ffcc;
+  opacity: 0.3;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transition: transform 0.15s ease-out, width 0.3s, height 0.3s, border-color 0.3s;
+  transform: translate(-50%, -50%);
+}
+
+.alien-cursor-orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140%;
+  height: 140%;
+  border: 1px dashed #ff00cc;
+  opacity: 0.4;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: orbit-slow 4s linear infinite;
+}
+
+.alien-cursor-bracket {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-color: #00ffcc;
+  opacity: 0.6;
+}
+
+.alien-modal-shape {
+  clip-path: polygon(
+    0% 20px, 20px 0%, 
+    calc(100% - 20px) 0%, 100% 20px, 
+    100% calc(100% - 20px), calc(100% - 20px) 100%, 
+    20px 100%, 0% calc(100% - 20px)
+  );
+}
+
+@keyframes beam-in {
+  0% { transform: scaleY(0) scaleX(0.1); opacity: 0; filter: brightness(5); }
+  50% { transform: scaleY(1) scaleX(0.1); opacity: 1; filter: brightness(2); }
+  100% { transform: scaleY(1) scaleX(1); opacity: 1; filter: brightness(1); }
+}
+
+.animate-beam-in {
+  animation: beam-in 0.6s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+.alien-nav-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.alien-nav-item::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #00ffcc;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.alien-nav-item:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@keyframes glitch-lines {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+.glitch-overlay {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 204, 0.03) 3px,
+    transparent 3px
+  );
+  animation: glitch-lines 10s linear infinite;
+}
+
+/* Updated Scramble Text Style */
+.irvil-text {
+  position: relative;
+  background: linear-gradient(to bottom, #ffffff, #a1a1a1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  text-shadow: 0 0 30px rgba(0, 255, 204, 0.2);
+}
+
+.irvil-text::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+  background: linear-gradient(90deg, #00ffcc, #ff00cc, #00ffcc);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0.3;
+  filter: blur(8px);
+  animation: irvil-glow 8s linear infinite;
+}
+
+@keyframes irvil-glow {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes text-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2%); }
+}
+
+.animate-text-float {
+  animation: text-float 6s ease-in-out infinite;
+}
+
+@keyframes alien-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); filter: blur(4px); }
+  50% { opacity: 0.6; transform: scale(1.1); filter: blur(6px); }
+}
+
+.alien-glow {
+  animation: alien-pulse 4s ease-in-out infinite;
+}
+
+@keyframes orbit-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-orbit-slow {
+  animation: orbit-slow 20s linear infinite;
+}
+
+.iridescent-bg {
+  background: linear-gradient(
+    45deg,
+    rgba(0, 255, 204, 0.08) 0%,
+    rgba(255, 0, 204, 0.08) 25%,
+    rgba(0, 102, 255, 0.08) 50%,
+    rgba(255, 0, 153, 0.08) 75%,
+    rgba(0, 255, 204, 0.08) 100%
+  );
+  background-size: 400% 400%;
+  animation: iridescent-move 12s ease infinite;
+}
+
+@keyframes iridescent-move {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.holographic-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(0, 255, 204, 0.05) 45%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 0, 204, 0.05) 55%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-position: 150% 0;
+  transition: background-position 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+.group:hover .holographic-overlay {
+  background-position: -50% 0;
+}
+
+.alien-border-glow {
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.05), inset 0 0 10px rgba(0, 255, 204, 0.05);
+}
+
+.alien-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.alien-border::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    rgba(0, 255, 204, 0.3),
+    transparent 20%,
+    transparent 50%,
+    rgba(255, 0, 204, 0.3),
+    transparent 70%
+  );
+  animation: orbit-slow 6s linear infinite;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: destination-out;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+@keyframes scan {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(200%); }
+}
+
+@keyframes scan-h {
+  from { left: -10%; }
+  to { left: 110%; }
+}
+
+.card-organic-bg {
+  background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 204, 0.03) 0%, transparent 70%);
+}
+
+.scanner-v-overlay {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 49.5%,
+    rgba(0, 255, 204, 0.1) 50%,
+    transparent 50.5%
+  );
+  background-size: 200% 100%;
+  animation: scan-v 15s linear infinite;
+}
+
+@keyframes scan-v {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
