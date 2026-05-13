@@ -50,6 +50,9 @@ function ShootingStar() {
 }
 
 function ShootingStars() {
+  const isMobile = useMemo(() => typeof window !== 'undefined' && window.innerWidth < 768, []);
+  if (isMobile) return null;
+
   return (
     <>
       <ShootingStar />
@@ -63,7 +66,7 @@ function ShootingStars() {
 function MilkyWay() {
   const pointsRef = useRef<THREE.Points>(null);
   const isMobile = useMemo(() => typeof window !== 'undefined' && window.innerWidth < 768, []);
-  const count = isMobile ? 4000 : 15000;
+  const count = isMobile ? 1000 : 15000;
   
   const { positions, colors } = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -102,7 +105,7 @@ function MilkyWay() {
   }, [count]);
 
   useFrame((state, delta) => {
-    if (pointsRef.current) {
+    if (pointsRef.current && !isMobile) {
         pointsRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 0.02) * 0.05;
     }
   });
@@ -214,10 +217,10 @@ function TheMorphingCore({ scrollY }: { scrollY: React.MutableRefObject<number> 
   };
 
   const isMobile = useMemo(() => typeof window !== 'undefined' && window.innerWidth < 768, []);
-  const detail = isMobile ? 32 : 64;
-  const wireSphereArgs = useMemo<[number, number, number]>(() => isMobile ? [1, 16, 8] : [1, 32, 16], [isMobile]);
-  const ringArgs = useMemo<[number, number, number, number]>(() => isMobile ? [1.4, 2.0, 32, 2] : [1.4, 2.0, 64, 4], [isMobile]);
-  const glowArgs = useMemo<[number, number]>(() => isMobile ? [1, 8] : [1, 16], [isMobile]);
+  const detail = isMobile ? 8 : 64; 
+  const wireSphereArgs = useMemo<[number, number, number]>(() => isMobile ? [1, 12, 6] : [1, 64, 32], [isMobile]); 
+  const ringArgs = useMemo<[number, number, number, number]>(() => isMobile ? [1.4, 2.0, 24, 1] : [1.4, 2.0, 96, 2], [isMobile]); 
+  const glowArgs = useMemo<[number, number]>(() => isMobile ? [1, 4] : [1, 16], [isMobile]); 
 
   useFrame((state) => {
     if (!coreRef.current || !coreMatRef.current || !wireMatRef.current || !wireRef.current || !glowRef.current || !ringRef.current || !ringMatRef.current) return;
@@ -254,7 +257,7 @@ function TheMorphingCore({ scrollY }: { scrollY: React.MutableRefObject<number> 
       targetDistort = 0.4 + localP * 0.1;
       targetSpeed = 2 - localP * 1;
       coreOp = 0.9 - localP * 0.75; // Gets much dimmer
-      wireOp = 0.0 + localP * 0.02;
+      wireOp = 0.0 + localP * 0.01; // Drastically reduced
       ringOp = 0;
     } else if (scrollProgress < 0.4) {
       // Beat 2: Expanded
@@ -263,8 +266,8 @@ function TheMorphingCore({ scrollY }: { scrollY: React.MutableRefObject<number> 
       targetDistort = 0.5 - localP * 0.1; // Smooth out to become more stable
       targetSpeed = 1;
       coreOp = 0.15 - localP * 0.05; // Stay very dim for readability
-      wireOp = 0.02 + localP * 0.05;
-      ringOp = 0 + localP * 0.1; // Ring starts to form
+      wireOp = 0.01 + localP * 0.02; // Drastically reduced
+      ringOp = 0 + localP * 0.03; // Drastically reduced
     } else if (scrollProgress < 0.6) {
       // Beat 3: Intelligence (Planetary Hologram Transition)
       const localP = (scrollProgress - 0.4) / 0.2;
@@ -272,8 +275,8 @@ function TheMorphingCore({ scrollY }: { scrollY: React.MutableRefObject<number> 
       targetDistort = 0.4 - localP * 0.3; // Solidify into a planet
       targetSpeed = 1 + localP * 1;
       coreOp = 0.1 - localP * 0.05; // Reveal internal wireframe
-      wireOp = 0.07 + localP * 0.15;
-      ringOp = 0.1 + localP * 0.2;
+      wireOp = 0.03 + localP * 0.05; // Drastically reduced
+      ringOp = 0.03 + localP * 0.07; // Drastically reduced
     } else if (scrollProgress < 0.8) {
       // Beat 4: Ecosystem (Stable Cyber Planet)
       const localP = (scrollProgress - 0.6) / 0.2;
@@ -281,8 +284,8 @@ function TheMorphingCore({ scrollY }: { scrollY: React.MutableRefObject<number> 
       targetDistort = 0.1; // Very smooth, almost no glitch
       targetSpeed = 2.0 - localP * 1.7; // Smoothly decelerate from Beat 3
       coreOp = 0.05;
-      wireOp = 0.22 - localP * 0.15; // Smoothly fade down
-      ringOp = 0.3 - localP * 0.2; // Smoothly fade down
+      wireOp = 0.08 - localP * 0.04; // Drastically reduced
+      ringOp = 0.1 - localP * 0.05; // Drastically reduced
     } else {
       // Beat 5: Singular Light point (Hyper-warp)
       const localP = Math.min((scrollProgress - 0.8) / 0.15, 1);
@@ -290,8 +293,8 @@ function TheMorphingCore({ scrollY }: { scrollY: React.MutableRefObject<number> 
       targetDistort = 0.1 + localP * 0.9; // Extreme distortion
       targetSpeed = 0.3 + localP * 9.7;
       coreOp = 0.05 + localP * 0.85;
-      wireOp = 0.07 + localP * 0.73;
-      ringOp = 0.1 - localP * 0.1;
+      wireOp = 0.04 + localP * 0.15; // Drastically reduced
+      ringOp = 0.05 - localP * 0.05; // Drastically reduced
     }
 
     // Smooth interpolations for transforms
@@ -491,9 +494,11 @@ function ParticleLayer({
     pointsRef.current.rotation.y += delta * (0.02 * parallaxSpeed) + velocityRef.current * 0.0002;
     pointsRef.current.rotation.z += delta * (0.01 * parallaxSpeed);
 
-    // 3. Dynamic Warp / Stretch (Trails)
-    const targetScaleY = 1 + speed * (0.005 * parallaxSpeed);
-    pointsRef.current.scale.y = THREE.MathUtils.lerp(pointsRef.current.scale.y, targetScaleY, 0.1);
+    // 3. Dynamic Warp / Stretch (Trails) - Skip on mobile to save cycles
+    if (!isMobile) {
+      const targetScaleY = 1 + speed * (0.005 * parallaxSpeed);
+      pointsRef.current.scale.y = THREE.MathUtils.lerp(pointsRef.current.scale.y, targetScaleY, 0.1);
+    }
 
     // 4. Hover Parallax
     const targetPX = state.pointer.x * (0.5 * parallaxSpeed);
@@ -566,7 +571,7 @@ function ParticleSystem({ scrollY }: { scrollY: React.MutableRefObject<number> }
     <group>
       {/* Background Layer: Slowest, small, faint */}
       <ParticleLayer 
-        count={isMobile ? 500 : 1500} 
+        count={isMobile ? 300 : 1500} 
         size={0.015} 
         color="#2a3f4d" 
         parallaxSpeed={0.5} 
@@ -577,7 +582,7 @@ function ParticleSystem({ scrollY }: { scrollY: React.MutableRefObject<number> }
       
       {/* Midground Layer: Medium speed */}
       <ParticleLayer 
-        count={isMobile ? 800 : 2000} 
+        count={isMobile ? 500 : 2000} 
         size={0.025} 
         color="#a1fced" 
         parallaxSpeed={1.2} 
@@ -588,7 +593,7 @@ function ParticleSystem({ scrollY }: { scrollY: React.MutableRefObject<number> }
       
       {/* Foreground Layer: Fastest, largest, reactive */}
       <ParticleLayer 
-        count={isMobile ? 150 : 400} 
+        count={isMobile ? 100 : 400} 
         size={0.05} 
         color="#00ffcc" 
         parallaxSpeed={3.0} 
@@ -748,9 +753,9 @@ export default function Scene({ scrollY }: { scrollY: React.MutableRefObject<num
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none">
-      <Canvas camera={{ position: [0, 0, 5], fov: 45 }} dpr={[1, isMobile ? 1.5 : 2]}>
+      <Canvas camera={{ position: [0, 0, 5], fov: 45 }} dpr={isMobile ? 1 : [1, 2]}>
         <color attach="background" args={['#010103']} />
-        <Stars radius={100} depth={50} count={starsCount} factor={4} saturation={0} fade speed={2} />
+        <Stars radius={100} depth={50} count={starsCount} factor={4} saturation={0} fade speed={isMobile ? 0 : 2} />
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={2} />
         <directionalLight position={[-10, -10, -5]} intensity={1} color="#00ffcc" />

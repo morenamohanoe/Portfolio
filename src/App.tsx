@@ -5,6 +5,7 @@ import { useGSAP } from '@gsap/react';
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring, useScroll } from 'motion/react';
 import Scene from './components/Scene';
 import { cn } from './lib/utils';
 import { X, MoveRight, ArrowUpRight } from 'lucide-react';
@@ -172,11 +173,232 @@ function CustomCursor() {
   );
 }
 
+function HudNavigator({ scrollYProgress }: { scrollYProgress: any }) {
+  const sections = [
+    { id: 'hero', label: 'CORE', icon: '01' },
+    { id: 'intelligence', label: 'INTEL', icon: '02' },
+    { id: 'process', label: 'LOGIC', icon: '03' },
+    { id: 'work', label: 'DATA', icon: '04' },
+    { id: 'connect', label: 'LINK', icon: '05' },
+  ];
+
+  return (
+    <div className="fixed left-6 top-1/2 -translate-y-1/2 z-[70] hidden lg:flex flex-col items-center gap-10">
+      <div className="hud-line-v h-20 top-[-80px]" />
+      {sections.map((s, i) => (
+        <button
+          key={s.id}
+          onClick={() => {
+            const el = document.getElementById(s.id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
+          className="group relative flex items-center justify-center"
+        >
+          <div className="tech-label absolute left-8 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-[-10px] group-hover:translate-x-0 whitespace-nowrap">
+            {s.label}
+          </div>
+          <div className="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[#00ffcc] transition-colors alien-glow group-hover:scale-150" />
+          <div className="absolute -inset-2 border border-[#00ffcc]/0 group-hover:border-[#00ffcc]/40 rounded-full transition-all duration-500 scale-50 group-hover:scale-100" />
+        </button>
+      ))}
+      <div className="hud-line-v h-20 bottom-[-80px]" />
+      
+      {/* Scroll indicator bar */}
+      <div className="absolute inset-y-0 -left-4 w-1 bg-white/5 rounded-full overflow-hidden">
+        <motion.div 
+          style={{ scaleY: scrollYProgress }} 
+          className="w-full h-full bg-[#00ffcc] origin-top shadow-[0_0_10px_#00ffcc]" 
+        />
+      </div>
+    </div>
+  );
+}
+
+function IntelligenceProfile() {
+  const stats = [
+    { label: 'System Architecture', v: 98 },
+    { label: 'Frontend Orchestration', v: 95 },
+    { label: 'DevOps & Pipeline', v: 88 },
+    { label: 'Neural Commerce (Magento)', v: 92 },
+  ];
+
+  return (
+    <section id="intelligence" className="min-h-screen w-full flex items-center px-6 md:px-24 bg-black/20 relative overflow-hidden">
+      <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-[#00ffcc]/5 blur-[120px] rounded-full -translate-x-1/2" />
+      <div className="neural-path" />
+      
+      <div className="max-w-5xl w-full mx-auto py-32 relative">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          className="flex items-center gap-4 mb-8"
+        >
+          <div className="w-12 h-[2px] bg-[#00ffcc]" />
+          <span className="font-mono text-[10px] tracking-[0.5em] text-[#00ffcc] uppercase">INTELLIGENCE_PROFILE_v2.6</span>
+        </motion.div>
+        
+        <div className="grid lg:grid-cols-12 gap-16 md:gap-24 items-center">
+          <div className="lg:col-span-12">
+            <motion.h2 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="font-display text-4xl md:text-8xl lg:text-[10rem] font-bold tracking-tighter leading-[0.8] uppercase mb-12"
+            >
+              ENGINEERED <br/>
+              <span className="text-[#ff00cc] italic">EFFICIENCY.</span>
+            </motion.h2>
+          </div>
+          
+          <div className="lg:col-span-5 space-y-10">
+            <motion.p 
+               initial={{ opacity: 0 }}
+               whileInView={{ opacity: 1 }}
+               transition={{ delay: 0.3 }}
+               viewport={{ once: true }}
+               className="text-lg md:text-xl font-light text-gray-400 leading-relaxed border-l-2 border-[#00ffcc]/30 pl-8"
+            >
+              Digital Architect and Systems Lead with 6+ years of experience in orchestrating high-load neural commerce networks and leading technical deployments for apex retail entities.
+            </motion.p>
+            
+            <motion.div 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              viewport={{ once: true }}
+              className="flex gap-4"
+            >
+              <div className="w-12 h-12 border border-[#00ffcc]/20 flex items-center justify-center alien-button bg-black/40">
+                <div className="w-2 h-2 bg-[#00ffcc] alien-glow" />
+              </div>
+              <div className="text-[10px] font-mono text-gray-500 uppercase flex flex-col justify-center">
+                <span>Core.Stability: 99.9%</span>
+                <span className="text-[#00ffcc]">Systems.Ready: TRUE</span>
+              </div>
+            </motion.div>
+          </div>
+          
+          <div className="lg:col-span-7 space-y-12">
+            <div className="grid gap-10">
+              {stats.map((s, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 * i }}
+                  viewport={{ once: true }}
+                >
+                  <div className="flex justify-between items-end mb-3">
+                    <span className="text-[10px] font-mono tracking-widest text-gray-400 uppercase">{s.label}</span>
+                    <span className="text-[10px] font-mono text-[#00ffcc]">{s.v}%</span>
+                  </div>
+                  <div className="stats-bar-outer">
+                    <motion.div 
+                      initial={{ scaleX: 0 }}
+                      whileInView={{ scaleX: s.v / 100 }}
+                      transition={{ duration: 2, delay: 0.5 + (0.1 * i), ease: [0.19, 1, 0.22, 1] }}
+                      viewport={{ once: true }}
+                      className="stats-bar-inner origin-left"
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            
+            <div className="pt-8 grid grid-cols-2 gap-4">
+              {['AWS/Azure', 'Kubernetes', 'Magento 2', 'Next.js'].map((tech, i) => (
+                <div key={i} className="flex items-center gap-3 bg-white/[0.03] border border-white/5 p-4 rounded-sm alien-modal-shape group hover:border-[#00ffcc]/30 transition-all duration-300">
+                  <div className="w-1 h-3 bg-[#00ffcc]/20 group-hover:bg-[#00ffcc]/70" />
+                  <span className="text-[9px] font-mono tracking-widest text-gray-500 group-hover:text-white transition-colors">{tech}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ParallaxProjectImage({ src, alt }: { src: string, alt: string }) {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springX = useSpring(mouseX, { stiffness: 150, damping: 25 });
+  const springY = useSpring(mouseY, { stiffness: 150, damping: 25 });
+
+  const translateX = useTransform(springX, [-200, 200], [-20, 20]);
+  const translateY = useTransform(springY, [-200, 200], [-20, 20]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  return (
+    <div 
+      className="relative aspect-video md:aspect-square bg-[#0a0a0a] rounded-sm overflow-hidden border border-white/10 group bg-grid-white/[0.02]"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <motion.img 
+        src={src} 
+        alt={alt} 
+        initial={{ scale: 1.2, opacity: 0 }}
+        animate={{ scale: 1.1, opacity: 1 }}
+        style={{ 
+          x: translateX, 
+          y: translateY,
+        }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
+        className="w-full h-full object-cover grayscale brightness-125 select-none pointer-events-none" 
+      />
+      
+      {/* Decorative Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
+      <div className="absolute top-4 left-4 flex gap-1 pointer-events-none">
+        <div className="w-1 h-3 bg-[#00ffcc]/40 animate-pulse" />
+        <div className="w-1 h-3 bg-[#00ffcc]/40 animate-pulse [animation-delay:0.2s]" />
+        <div className="w-1 h-3 bg-[#00ffcc]/40 animate-pulse [animation-delay:0.4s]" />
+      </div>
+      
+      <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
+        <div className="flex justify-between items-end mb-2">
+           <div className="text-[7px] font-mono text-[#00ffcc] opacity-60 uppercase tracking-widest flex items-center gap-2">
+             <div className="w-1 h-1 rounded-full bg-[#00ffcc] animate-ping" />
+             Neural_Surface_Capture
+           </div>
+           <div className="text-[6px] font-mono text-white/20">POV: {src.includes('lh3.googleusercontent') ? 'REMOTE_STREAM' : 'DIRECT_LINK'}</div>
+        </div>
+        <div className="h-[2px] bg-white/5 rounded-full overflow-hidden">
+          <motion.div 
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 1.5, ease: "circOut" }}
+            className="h-full bg-gradient-to-r from-[#00ffcc]/0 via-[#00ffcc]/40 to-[#00ffcc]/0 origin-left" 
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const scrollYRef = useRef(0);
   const horizontalSectionRef = useRef<HTMLDivElement>(null);
   const horizontalWrapperRef = useRef<HTMLUListElement>(null);
+
+  const { scrollYProgress } = useScroll({ target: containerRef });
 
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -306,12 +528,12 @@ export default function App() {
   return (
     <div ref={containerRef} className="relative w-full alien-hex-bg text-white font-sans selection:bg-[#00ffcc] selection:text-black min-h-screen cursor-hidden">
       <CustomCursor />
+      <HudNavigator scrollYProgress={scrollYProgress} />
       {/* HUD Overlays */}
       <div className="fixed inset-0 pointer-events-none z-[60]">
         <div className="absolute inset-0 alien-hud-grid opacity-10" />
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black to-transparent opacity-80" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black to-transparent opacity-80" />
-        <div className="absolute inset-0 glitch-overlay" />
         
         {/* Corner Brackets */}
         <div className="absolute top-8 left-8 w-16 h-16 border-t-2 border-l-2 border-[#00ffcc]/30" />
@@ -325,7 +547,10 @@ export default function App() {
          <div className="absolute -top-[1px] left-1/2 -translate-x-1/2 w-32 h-[2px] bg-gradient-to-r from-transparent via-[#00ffcc] to-transparent" />
          
          <button 
-           onClick={() => setIsProfileModalOpen(true)}
+           onClick={() => {
+             const el = document.getElementById('intelligence');
+             if (el) el.scrollIntoView({ behavior: 'smooth' });
+           }}
            aria-label="Open profile"
            className="relative group p-1"
          >
@@ -336,11 +561,37 @@ export default function App() {
          </button>
 
          <div className="flex items-center gap-4 md:gap-12 text-[9px] md:text-[10px] font-mono uppercase tracking-[0.2em] md:tracking-[0.3em] text-gray-400">
-            <button onClick={() => lenis?.scrollTo('#work')} className="alien-nav-item py-4 hover:text-white transition-colors">Work</button>
-            <button onClick={() => lenis?.scrollTo('#process')} className="alien-nav-item py-4 hover:text-white transition-colors">Process</button>
-            <button onClick={() => lenis?.scrollTo('#connect')} className="alien-nav-item py-4 hover:text-white transition-colors">Contact</button>
+            <button onClick={() => {
+              const el = document.getElementById('work');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }} className="alien-nav-item py-4 hover:text-white transition-colors">Work</button>
+            <button onClick={() => {
+              const el = document.getElementById('process');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }} className="alien-nav-item py-4 hover:text-white transition-colors">Process</button>
+            <button onClick={() => {
+              const el = document.getElementById('connect');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }} className="alien-nav-item py-4 hover:text-white transition-colors">Contact</button>
          </div>
       </nav>
+
+      {/* System Diagnostics Panel */}
+      <div className="fixed bottom-8 right-8 z-[70] hidden lg:block font-mono text-[7px] text-[#00ffcc] opacity-40 mix-blend-screen pointer-events-none">
+        <div className="border-l border-[#00ffcc]/30 pl-4 space-y-1">
+          <div className="flex justify-between w-32"><span>OS_KERNEL:</span><span>AW_LIT_v2</span></div>
+          <div className="flex justify-between w-32 text-gray-500"><span>IO_STATE:</span><span>LISTENING</span></div>
+          <div className="flex justify-between w-32"><span>GL_CONTEXT:</span><span>WEBG_2.0</span></div>
+          <div className="flex justify-between w-32"><span>LATENCY:</span><span>2.4ms</span></div>
+          <motion.div 
+            animate={{ opacity: [0.4, 0.8, 0.4] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="flex justify-between w-32 text-white"
+          >
+            <span>BUFFER_STR:</span><span>EN_CRYPT</span>
+          </motion.div>
+        </div>
+      </div>
 
       <Scene scrollY={scrollYRef} />
       
@@ -348,7 +599,7 @@ export default function App() {
       <main className="relative z-10 mx-auto w-full">
         
         {/* BEAT 1: The Neural Core (Hero) */}
-        <section className="h-screen w-full flex flex-col items-center justify-center relative px-6 overflow-hidden">
+        <section id="hero" className="h-screen w-full flex flex-col items-center justify-center relative px-6 overflow-hidden">
           {/* Central Alien Aura */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#00ffcc]/5 blur-[120px] rounded-full -z-10 pointer-events-none" />
           
@@ -388,55 +639,8 @@ export default function App() {
           </div>
         </section>
 
-        {/* BEAT 2: The Scale (Experience) */}
-        <section className="min-h-screen w-full flex items-center px-6 md:px-24 bg-black/20 relative overflow-hidden">
-          <div className="absolute top-1/2 left-0 w-[500px] h-[500px] bg-[#00ffcc]/5 blur-[120px] rounded-full -translate-x-1/2" />
-          
-          <div className="max-w-5xl w-full mx-auto py-32 relative">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-12 h-[2px] bg-[#00ffcc]" />
-              <span className="font-mono text-[10px] tracking-[0.5em] text-[#00ffcc] uppercase">Achievement_Log_v26</span>
-            </div>
-            
-            <div className="overflow-hidden mb-12">
-              <h2 className="text-reveal font-display text-4xl md:text-7xl lg:text-9xl font-bold tracking-tight leading-[1] uppercase">
-                6+ <span className="text-gray-600">YEARS</span> <br className="md:hidden" /> OF <br/>
-                <span className="text-[#ff00cc] italic">EVOLUTION.</span>
-              </h2>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-12 md:gap-20 mt-16 md:mt-32">
-              <div className="space-y-6 md:space-y-10">
-                <div className="overflow-hidden">
-                  <p className="text-reveal text-lg md:text-xl font-light text-gray-400 leading-relaxed border-l-2 border-[#00ffcc]/30 pl-6 md:pl-8">
-                    Orchestrating high-load neural commerce networks and leading technical deployments for apex retail entities.
-                  </p>
-                </div>
-                
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 border border-[#00ffcc]/20 flex items-center justify-center alien-button bg-black/40">
-                    <div className="w-2 h-2 bg-[#00ffcc] alien-glow" />
-                  </div>
-                  <div className="text-[10px] font-mono text-gray-500 uppercase flex flex-col justify-center">
-                    <span>Hardware Integration: Complete</span>
-                    <span className="text-[#00ffcc]">Software Sync: Active</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                {['Studio-88', 'Interfoto'].map((brand, i) => (
-                  <div key={i} className="overflow-hidden group">
-                     <div className="text-reveal font-display text-4xl md:text-6xl border-b border-white/5 py-6 flex items-baseline justify-between hover:border-[#00ffcc]/30 transition-colors">
-                       <span className="group-hover:translate-x-4 transition-transform duration-500">{brand}</span>
-                       <span className="font-mono text-[10px] text-gray-600">ID.202{i+1}</span>
-                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* BEAT 2: The Intelligence (Re-Engineered) */}
+        <IntelligenceProfile />
 
         {/* BEAT 3: The Intelligence (AI & Logic) */}
         <section id="process" className="min-h-screen w-full flex items-center px-6 md:px-24 relative">
@@ -504,7 +708,13 @@ export default function App() {
           <div className="flex pl-6 md:pl-24">
             <ul ref={horizontalWrapperRef} className="flex gap-12 items-center pb-24 pr-24 list-none">
               {projects.map((proj, i) => (
-                <li key={i}>
+                <motion.li 
+                  key={i}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1, duration: 1, ease: "circOut" }}
+                  viewport={{ once: true, margin: "0px 100px 0px 0px" }}
+                >
                   <article 
                     onClick={() => openModal(proj)}
                     onKeyDown={(e) => {
@@ -572,7 +782,7 @@ export default function App() {
                       </div>
                     </div>
                   </article>
-                </li>
+                </motion.li>
               ))}
             </ul>
           </div>
@@ -647,112 +857,150 @@ export default function App() {
         </section>
 
         {/* Project Modal */}
-        <div 
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-title"
-          className={cn(
-            "fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-all duration-500",
-            isModalOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
-          )}
-          onClick={closeModal}
-        >
-          <div 
-            className={cn(
-              "bg-black/95 border border-[#00ffcc]/40 p-1 md:p-1 max-w-2xl w-full relative transition-all duration-700 alien-modal-shape shadow-[0_0_150px_rgba(0,255,204,0.15)] overflow-hidden",
-              isModalOpen ? "animate-beam-in" : "scale-90 opacity-0"
-            )}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal HUD Elements */}
-            <div className="absolute inset-0 iridescent-bg opacity-10 pointer-events-none" />
-            <div className="absolute inset-0 holographic-overlay opacity-20" />
-            <div className="absolute inset-0 scanner-v-overlay pointer-events-none opacity-5" />
-            
-            {/* Top Bar Decoration */}
-            <div className="h-8 bg-[#00ffcc]/10 border-b border-[#00ffcc]/20 flex items-center justify-between px-6">
-              <div className="flex gap-1.5">
-                <div className="w-1 h-1 bg-[#00ffcc] rounded-full animate-pulse" />
-                <div className="w-1 h-1 bg-[#00ffcc] rounded-full animate-pulse [animation-delay:0.2s]" />
-                <div className="w-1 h-1 bg-[#00ffcc] rounded-full animate-pulse [animation-delay:0.4s]" />
-              </div>
-              <span className="text-[8px] font-mono tracking-[0.4em] text-[#00ffcc] uppercase opacity-50">Authorized_Access_v2.1</span>
-              <button 
-                onClick={closeModal}
-                aria-label="Close"
-                className="text-gray-500 hover:text-[#ff00cc] transition-colors p-1"
+        <AnimatePresence>
+          {isModalOpen && selectedProject && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="modal-title"
+              className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+              onClick={closeModal}
+            >
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0, y: 10 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="bg-black/95 border border-[#00ffcc]/40 p-1 md:p-1 max-w-2xl w-full relative alien-modal-shape shadow-[0_0_150px_rgba(0,255,204,0.15)] overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
               >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-5 md:p-10 relative">
-              {selectedProject && (
-                <div className="grid md:grid-cols-12 gap-8 md:gap-10">
-                  <div className="md:col-span-12">
-                    <div className="flex items-center gap-3 mb-3 md:mb-4">
-                      <div className="h-[2px] w-8 md:w-12 bg-[#ff00cc]" />
-                      <span className="text-[8px] md:text-[10px] font-mono tracking-[0.2em] md:tracking-[0.3em] text-[#ff00cc] uppercase">Project_Details</span>
-                    </div>
-                    <h3 id="modal-title" className="font-display text-3xl md:text-6xl font-bold mb-3 md:mb-4 tracking-tighter uppercase leading-none">
-                      {selectedProject.name}
-                    </h3>
+                {/* Modal HUD Elements */}
+                <div className="absolute inset-0 iridescent-bg opacity-10 pointer-events-none" />
+                <div className="absolute inset-0 holographic-overlay opacity-20" />
+                <div className="absolute inset-0 scanner-v-overlay pointer-events-none opacity-5" />
+                
+                {/* Top Bar Decoration */}
+                <div className="h-8 bg-[#00ffcc]/10 border-b border-[#00ffcc]/20 flex items-center justify-between px-6">
+                  <div className="flex gap-1.5">
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }} 
+                      transition={{ repeat: Infinity, duration: 1 }}
+                      className="w-1 h-1 bg-[#00ffcc] rounded-full" 
+                    />
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }} 
+                      transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}
+                      className="w-1 h-1 bg-[#00ffcc] rounded-full" 
+                    />
+                    <motion.div 
+                      animate={{ scale: [1, 1.2, 1] }} 
+                      transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}
+                      className="w-1 h-1 bg-[#00ffcc] rounded-full" 
+                    />
                   </div>
+                  <span className="text-[8px] font-mono tracking-[0.4em] text-[#00ffcc] uppercase opacity-50">Authorized_Access_v2.1</span>
+                  <button 
+                    onClick={closeModal}
+                    aria-label="Close"
+                    className="text-gray-500 hover:text-[#ff00cc] transition-colors p-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
 
-                  <div className="md:col-span-5 space-y-6 md:space-y-8">
-                    <div className="relative aspect-video md:aspect-square bg-[#0a0a0a] rounded-sm overflow-hidden border border-white/10 group">
-                      <img src={selectedProject.img} alt={`${selectedProject.name} - Case study visual representation`} className="w-full h-full object-cover grayscale brightness-125" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <div className="text-[8px] font-mono text-[#00ffcc] mb-1 opacity-60">VISUAL_THUMBNAIL</div>
-                        <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-                          <div className="h-full bg-[#00ffcc] w-2/3 animate-[scan-h_3s_linear_infinite]" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="md:col-span-7 flex flex-col justify-between">
-                    <div className="space-y-6">
-                      <p className="text-gray-400 text-xs md:text-base leading-relaxed font-light border-l-2 border-[#00ffcc]/30 pl-5 md:pl-6">
-                        {selectedProject.fullDesc}
-                      </p>
-                      
-                      <div className="space-y-3 md:space-y-4">
-                        <h4 className="text-[7px] md:text-[8px] font-mono tracking-[0.4em] uppercase text-gray-500">Requirements</h4>
-                        <div className="flex flex-wrap gap-2">
-                          {selectedProject.tech.map((t, idx) => (
-                            <span key={idx} className="px-2 py-1 md:px-3 md:py-1.5 text-[7px] md:text-[9px] font-mono border border-white/10 text-gray-400 uppercase tracking-widest hover:border-[#ff00cc]/50 transition-colors">
-                              {t}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-6 md:pt-8 flex items-center justify-between">
-                      <a 
-                        href={`https://${selectedProject.url.replace('https://', '')}`} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-3 md:gap-4 py-2.5 px-6 md:py-3 md:px-8 bg-white text-black font-bold uppercase tracking-widest text-[9px] md:text-[10px] alien-button hover:bg-[#00ffcc] transition-colors"
+                <div className="p-5 md:p-10 relative">
+                  <div className="grid md:grid-cols-12 gap-8 md:gap-10">
+                    <div className="md:col-span-12">
+                      <motion.div 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="flex items-center gap-3 mb-3 md:mb-4"
                       >
-                        Launch
-                        <ArrowUpRight className="w-4 h-4" />
-                      </a>
-                      <div className="text-[8px] md:text-[9px] font-mono text-gray-600 uppercase tracking-widest">
-                        ID: 0x{selectedProject.id}
+                        <div className="h-[2px] w-8 md:w-12 bg-[#ff00cc]" />
+                        <span className="text-[8px] md:text-[10px] font-mono tracking-[0.2em] md:tracking-[0.3em] text-[#ff00cc] uppercase">Project_Details</span>
+                      </motion.div>
+                      <motion.h3 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        id="modal-title" 
+                        className="font-display text-3xl md:text-6xl font-bold mb-3 md:mb-4 tracking-tighter uppercase leading-none"
+                      >
+                        {selectedProject.name}
+                      </motion.h3>
+                    </div>
+
+                    <div className="md:col-span-5 space-y-6 md:space-y-8">
+                       <ParallaxProjectImage src={selectedProject.img} alt={`${selectedProject.name} - Case study visual representation`} />
+                    </div>
+
+                    <div className="md:col-span-7 flex flex-col justify-between">
+                      <div className="space-y-6">
+                        <motion.p 
+                          initial={{ opacity: 0, x: 10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.3 }}
+                          className="text-gray-400 text-xs md:text-base leading-relaxed font-light border-l-2 border-[#00ffcc]/30 pl-5 md:pl-6"
+                        >
+                          {selectedProject.fullDesc}
+                        </motion.p>
+                        
+                        <div className="space-y-3 md:space-y-4">
+                          <h4 className="text-[7px] md:text-[8px] font-mono tracking-[0.4em] uppercase text-gray-500">Requirements</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedProject.tech.map((t, idx) => (
+                              <motion.span 
+                                initial={{ opacity: 0, y: 5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.4 + idx * 0.05 }}
+                                key={idx} 
+                                className="px-2 py-1 md:px-3 md:py-1.5 text-[7px] md:text-[9px] font-mono border border-[#00ffcc]/20 text-[#00ffcc] uppercase tracking-widest hover:border-[#ff00cc]/50 transition-colors bg-[#00ffcc]/5"
+                              >
+                                {t}
+                              </motion.span>
+                            ))}
+                          </div>
+                        </div>
                       </div>
+
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.6 }}
+                        className="pt-6 md:pt-8 flex items-center justify-between"
+                      >
+                        <a 
+                          href={`https://${selectedProject.url.replace('https://', '')}`} 
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-3 md:gap-4 py-2.5 px-6 md:py-3 md:px-8 bg-white text-black font-bold uppercase tracking-widest text-[9px] md:text-[10px] alien-button hover:bg-[#00ffcc] transition-colors"
+                        >
+                          Launch
+                          <ArrowUpRight className="w-4 h-4" />
+                        </a>
+                        <div className="text-[8px] md:text-[9px] font-mono text-gray-600 uppercase tracking-widest">
+                          ID: 0x{selectedProject.id}
+                        </div>
+                      </motion.div>
                     </div>
                   </div>
                 </div>
-              )}
-            </div>
-            
-            {/* Bottom Accent */}
-            <div className="h-1 bg-gradient-to-r from-transparent via-[#00ffcc]/30 to-transparent" />
-          </div>
-        </div>
+                
+                {/* Bottom Accent */}
+                <motion.div 
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 0.8, duration: 1 }}
+                  className="h-1 bg-gradient-to-r from-transparent via-[#00ffcc]/30 to-transparent" 
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Profile Modal */}
         <div 
