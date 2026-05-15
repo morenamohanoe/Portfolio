@@ -316,7 +316,7 @@ function IntelligenceProfile() {
             </div>
             
             <div className="pt-8 grid grid-cols-2 gap-4">
-              {['AWS/Azure', 'Kubernetes', 'Magento 2', 'Next.js'].map((tech, i) => (
+              {['AWS/Azure', 'Kubernetes', 'Magento 2', 'Next.js', 'TypeScript', 'React', 'WordPress', 'MariaDB'].map((tech, i) => (
                 <div key={i} className="flex items-center gap-3 bg-white/[0.03] border border-white/5 p-4 rounded-sm alien-modal-shape group hover:border-[#00ffcc]/30 transition-all duration-300">
                   <div className="w-1 h-3 bg-[#00ffcc]/20 group-hover:bg-[#00ffcc]/70" />
                   <span className="text-[9px] font-mono tracking-widest text-gray-500 group-hover:text-white transition-colors">{tech}</span>
@@ -331,6 +331,15 @@ function IntelligenceProfile() {
 }
 
 function ParallaxProjectImage({ src, alt }: { src: string, alt: string }) {
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -341,6 +350,7 @@ function ParallaxProjectImage({ src, alt }: { src: string, alt: string }) {
   const translateY = useTransform(springY, [-200, 200], [-20, 20]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
@@ -362,23 +372,26 @@ function ParallaxProjectImage({ src, alt }: { src: string, alt: string }) {
       <motion.img 
         src={src} 
         alt={alt} 
-        initial={{ scale: 1.2, opacity: 0 }}
-        animate={{ scale: 1.1, opacity: 1 }}
+        initial={{ scale: 1.1, opacity: 0 }}
+        animate={{ scale: 1.05, opacity: 1 }}
         style={{ 
-          x: translateX, 
-          y: translateY,
+          x: isMobile ? 0 : translateX, 
+          y: isMobile ? 0 : translateY,
         }}
         transition={{ duration: 1.2, ease: "easeOut" }}
-        className="w-full h-full object-cover grayscale brightness-125 select-none pointer-events-none" 
+        className="w-full h-full object-cover grayscale md:brightness-125 select-none pointer-events-none" 
       />
       
-      {/* Decorative Overlays */}
+      {/* Decorative Overlays - Simplified on Mobile */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
-      <div className="absolute top-4 left-4 flex gap-1 pointer-events-none">
-        <div className="w-1 h-3 bg-[#00ffcc]/40 animate-pulse" />
-        <div className="w-1 h-3 bg-[#00ffcc]/40 animate-pulse [animation-delay:0.2s]" />
-        <div className="w-1 h-3 bg-[#00ffcc]/40 animate-pulse [animation-delay:0.4s]" />
-      </div>
+      
+      {!isMobile && (
+        <div className="absolute top-4 left-4 flex gap-1 pointer-events-none">
+          <div className="w-1 h-3 bg-[#00ffcc]/40 animate-pulse" />
+          <div className="w-1 h-3 bg-[#00ffcc]/40 animate-pulse [animation-delay:0.2s]" />
+          <div className="w-1 h-3 bg-[#00ffcc]/40 animate-pulse [animation-delay:0.4s]" />
+        </div>
+      )}
       
       <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
         <div className="flex justify-between items-end mb-2">
@@ -386,12 +399,13 @@ function ParallaxProjectImage({ src, alt }: { src: string, alt: string }) {
              <div className="w-1 h-1 rounded-full bg-[#00ffcc] animate-ping" />
              Neural_Surface_Capture
            </div>
-           <div className="text-[6px] font-mono text-white/20">POV: {src.includes('lh3.googleusercontent') ? 'REMOTE_STREAM' : 'DIRECT_LINK'}</div>
+           <div className="text-[6px] font-mono text-white/20">POV: {src.includes('lh3.googleusercontent') ? 'REMOTE' : 'DIRECT'}</div>
         </div>
-        <div className="h-[2px] bg-white/5 rounded-full overflow-hidden">
+        <div className="h-[1px] md:h-[2px] bg-white/5 rounded-full overflow-hidden">
           <motion.div 
             initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
             transition={{ duration: 1.5, ease: "circOut" }}
             className="h-full bg-gradient-to-r from-[#00ffcc]/0 via-[#00ffcc]/40 to-[#00ffcc]/0 origin-left" 
           />
@@ -552,7 +566,10 @@ export default function App() {
       </div>
 
       {/* Sticky Navigation */}
-      <nav aria-label="Main Navigation" className="fixed top-8 left-1/2 -translate-x-1/2 z-70 flex items-center gap-4 md:gap-8 px-8 py-2 bg-black/60 backdrop-blur-xl border border-[#00ffcc]/20 rounded-sm shadow-[0_0_30px_rgba(0,255,204,0.1)]">
+      <nav aria-label="Main Navigation" className={cn(
+        "fixed top-8 left-1/2 -translate-x-1/2 z-[300] flex items-center gap-4 md:gap-8 px-8 py-2 bg-black/60 backdrop-blur-xl border border-[#00ffcc]/20 rounded-sm shadow-[0_0_30px_rgba(0,255,204,0.1)] transition-all duration-300",
+        (isModalOpen || isProfileModalOpen) && "opacity-0 pointer-events-none -translate-y-20"
+      )}>
          <div className="absolute -top-[1px] left-1/2 -translate-x-1/2 w-32 h-[2px] bg-gradient-to-r from-transparent via-[#00ffcc] to-transparent" />
          
          <button 
@@ -736,15 +753,15 @@ export default function App() {
                     tabIndex={0}
                     aria-label={`View details for ${proj.name} project`}
                     aria-haspopup="dialog"
-                    className="w-[85vw] md:w-[40vw] shrink-0 group relative cursor-pointer transition-all duration-700 ease-out hover:scale-[1.02] hover:-translate-y-4 p-6 md:p-8 rounded-[2rem] bg-[#050505] border border-white/5 hover:border-transparent alien-border alien-border-glow shadow-2xl z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00ffcc] overflow-hidden"
+                    className="w-[85vw] md:w-[40vw] shrink-0 group relative cursor-pointer transition-all duration-700 ease-out md:hover:scale-[1.02] md:hover:-translate-y-4 p-6 md:p-8 rounded-[2rem] bg-[#050505] border border-white/5 hover:border-transparent md:alien-border alien-border-glow shadow-2xl z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00ffcc] overflow-hidden"
                   >
-                    {/* Alien Background Texture & Holographic Effects */}
-                    <div className="absolute inset-0 iridescent-bg opacity-30 group-hover:opacity-60 transition-all duration-700 pointer-events-none" />
-                    <div className="absolute inset-0 card-organic-bg pointer-events-none" />
-                    <div className="holographic-overlay" />
+                    {/* Alien Background Texture & Holographic Effects - Hidden/Reduced on Mobile for performance */}
+                    <div className="absolute inset-0 iridescent-bg opacity-10 md:opacity-30 md:group-hover:opacity-60 transition-all duration-700 pointer-events-none" />
+                    <div className="absolute inset-0 card-organic-bg pointer-events-none opacity-40 md:opacity-100" />
+                    <div className="holographic-overlay hidden md:block" />
                     
-                    {/* Scanning Light Strip (Vertical) */}
-                    <div className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#00ffcc] to-transparent left-0 opacity-0 group-hover:opacity-40 group-hover:animate-[scan-h_2s_linear_infinite] pointer-events-none" />
+                    {/* Scanning Light Strip (Vertical) - Desktop Only */}
+                    <div className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[#00ffcc] to-transparent left-0 opacity-0 group-hover:opacity-40 group-hover:animate-[scan-h_2s_linear_infinite] hidden md:block pointer-events-none" />
                     
                     {/* Decorative Alien Nodes */}
                     <div className="absolute top-4 right-4 flex gap-1 pointer-events-none">
@@ -875,99 +892,83 @@ export default function App() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="modal-title"
-              className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
+              className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl"
               onClick={closeModal}
             >
               <motion.div 
-                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                initial={{ scale: 0.98, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.95, opacity: 0, y: 10 }}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="bg-black/95 border border-[#00ffcc]/40 p-1 md:p-1 max-w-2xl w-full relative alien-modal-shape shadow-[0_0_150px_rgba(0,255,204,0.15)] overflow-hidden"
+                exit={{ scale: 0.98, opacity: 0, y: 10 }}
+                transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                className="bg-[#050505] border border-[#00ffcc]/30 max-w-5xl w-full relative alien-modal-shape shadow-[0_0_200px_rgba(0,255,204,0.25)] flex flex-col h-auto max-h-[92vh] overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Modal HUD Elements */}
                 <div className="absolute inset-0 iridescent-bg opacity-10 pointer-events-none" />
-                <div className="absolute inset-0 holographic-overlay opacity-20" />
                 <div className="absolute inset-0 scanner-v-overlay pointer-events-none opacity-5" />
                 
                 {/* Top Bar Decoration */}
-                <div className="h-8 bg-[#00ffcc]/10 border-b border-[#00ffcc]/20 flex items-center justify-between px-6">
-                  <div className="flex gap-1.5">
-                    <motion.div 
-                      animate={{ scale: [1, 1.2, 1] }} 
-                      transition={{ repeat: Infinity, duration: 1 }}
-                      className="w-1 h-1 bg-[#00ffcc] rounded-full" 
-                    />
-                    <motion.div 
-                      animate={{ scale: [1, 1.2, 1] }} 
-                      transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}
-                      className="w-1 h-1 bg-[#00ffcc] rounded-full" 
-                    />
-                    <motion.div 
-                      animate={{ scale: [1, 1.2, 1] }} 
-                      transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}
-                      className="w-1 h-1 bg-[#00ffcc] rounded-full" 
-                    />
+                <div className="h-10 md:h-14 bg-[#00ffcc]/10 border-b border-[#00ffcc]/20 flex items-center justify-between px-4 md:px-8 relative z-50">
+                  <div className="flex gap-2 items-center">
+                    <motion.div animate={{ opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 1.5 }} className="w-1.5 h-1.5 bg-[#00ffcc] rounded-full" />
+                    <span className="text-[10px] md:text-xs font-display font-medium text-[#00ffcc] truncate max-w-[150px] md:max-w-none uppercase tracking-widest">{selectedProject.name}</span>
                   </div>
-                  <span className="text-[8px] font-mono tracking-[0.4em] text-[#00ffcc] uppercase opacity-50">Authorized_Access_v2.1</span>
-                  <button 
-                    onClick={closeModal}
-                    aria-label="Close"
-                    className="text-gray-500 hover:text-[#ff00cc] transition-colors p-1"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-4">
+                    <span className="hidden md:inline text-[9px] font-mono tracking-[0.4em] text-[#00ffcc] uppercase opacity-60">System.Node.Access</span>
+                    <button 
+                      onClick={closeModal}
+                      aria-label="Close"
+                      className="text-white hover:text-[#ff00cc] transition-colors p-2 md:p-1 bg-white/5 md:bg-transparent rounded-full flex items-center justify-center"
+                    >
+                      <X className="w-5 h-5 md:w-6 md:h-6" />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="p-5 md:p-10 relative">
-                  <div className="grid md:grid-cols-12 gap-8 md:gap-10">
+                <div className="flex-1 overflow-y-auto p-6 md:p-12 custom-scrollbar relative">
+                  <div className="grid md:grid-cols-12 gap-10 md:gap-14 items-start">
                     <div className="md:col-span-12">
                       <motion.div 
-                        initial={{ opacity: 0, x: -20 }}
+                        initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="flex items-center gap-3 mb-3 md:mb-4"
+                        className="flex items-center gap-4 mb-4"
                       >
-                        <div className="h-[2px] w-8 md:w-12 bg-[#ff00cc]" />
-                        <span className="text-[8px] md:text-[10px] font-mono tracking-[0.2em] md:tracking-[0.3em] text-[#ff00cc] uppercase">Project_Details</span>
+                        <div className="h-[2px] w-8 bg-[#ff00cc]" />
+                        <span className="text-[10px] font-mono tracking-[0.3em] text-[#ff00cc] uppercase">Database_Record</span>
                       </motion.div>
                       <motion.h3 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        id="modal-title" 
-                        className="font-display text-3xl md:text-6xl font-bold mb-3 md:mb-4 tracking-tighter uppercase leading-none"
+                        className="font-display text-4xl md:text-6xl font-bold mb-8 tracking-tighter uppercase leading-[0.9]"
                       >
                         {selectedProject.name}
                       </motion.h3>
                     </div>
 
-                    <div className="md:col-span-5 space-y-6 md:space-y-8">
-                       <ParallaxProjectImage src={selectedProject.img} alt={`${selectedProject.name} - Case study visual representation`} />
+                    <div className="md:col-span-6">
+                       <ParallaxProjectImage src={selectedProject.img} alt={`${selectedProject.name} documentation`} />
                     </div>
 
-                    <div className="md:col-span-7 flex flex-col justify-between">
+                    <div className="md:col-span-6 flex flex-col py-2">
                       <div className="space-y-6">
                         <motion.p 
-                          initial={{ opacity: 0, x: 10 }}
-                          animate={{ opacity: 1, x: 0 }}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
                           transition={{ delay: 0.3 }}
-                          className="text-gray-400 text-xs md:text-base leading-relaxed font-light border-l-2 border-[#00ffcc]/30 pl-5 md:pl-6"
+                          className="text-gray-400 text-sm md:text-lg leading-relaxed font-light border-l border-[#00ffcc]/30 pl-6"
                         >
                           {selectedProject.fullDesc}
                         </motion.p>
                         
-                        <div className="space-y-3 md:space-y-4">
-                          <h4 className="text-[7px] md:text-[8px] font-mono tracking-[0.4em] uppercase text-gray-500">Requirements</h4>
-                          <div className="flex flex-wrap gap-2">
+                        <div className="space-y-4">
+                          <h4 className="text-[10px] font-mono tracking-[0.4em] uppercase text-gray-500">Infrastructure</h4>
+                          <div className="flex flex-wrap gap-2 md:gap-3">
                             {selectedProject.tech.map((t, idx) => (
                               <motion.span 
-                                initial={{ opacity: 0, y: 5 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4 + idx * 0.05 }}
                                 key={idx} 
-                                className="px-2 py-1 md:px-3 md:py-1.5 text-[7px] md:text-[9px] font-mono border border-[#00ffcc]/20 text-[#00ffcc] uppercase tracking-widest hover:border-[#ff00cc]/50 transition-colors bg-[#00ffcc]/5"
+                                className="px-3 py-1 md:px-4 md:py-1.5 text-[9px] md:text-[10px] font-mono border border-[#00ffcc]/10 text-[#00ffcc] uppercase tracking-widest bg-[#00ffcc]/5"
                               >
                                 {t}
                               </motion.span>
@@ -975,28 +976,31 @@ export default function App() {
                           </div>
                         </div>
                       </div>
-
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.6 }}
-                        className="pt-6 md:pt-8 flex items-center justify-between"
-                      >
-                        <a 
-                          href={`https://${selectedProject.url.replace('https://', '')}`} 
-                          target="_blank" 
-                          rel="noreferrer"
-                          className="inline-flex items-center gap-3 md:gap-4 py-2.5 px-6 md:py-3 md:px-8 bg-white text-black font-bold uppercase tracking-widest text-[9px] md:text-[10px] alien-button hover:bg-[#00ffcc] transition-colors"
-                        >
-                          Launch
-                          <ArrowUpRight className="w-4 h-4" />
-                        </a>
-                        <div className="text-[8px] md:text-[9px] font-mono text-gray-600 uppercase tracking-widest">
-                          ID: 0x{selectedProject.id}
-                        </div>
-                      </motion.div>
                     </div>
                   </div>
+                </div>
+
+                <div className="p-6 md:p-8 bg-[#0a0a0a] border-t border-[#00ffcc]/10 flex items-center justify-between">
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="hidden sm:block text-[9px] md:text-[10px] font-mono text-gray-500 uppercase tracking-widest"
+                  >
+                    REF_ID: 0x{selectedProject.id}
+                  </motion.div>
+                  <motion.a 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                    href={`https://${selectedProject.url.replace('https://', '')}`} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-3 py-3 px-10 bg-white text-black font-bold uppercase tracking-widest text-[10px] md:text-[11px] alien-button hover:bg-[#00ffcc] transition-all hover:scale-105 active:scale-95 z-50"
+                  >
+                    Launch Application
+                    <ArrowUpRight className="w-4 h-4" />
+                  </motion.a>
                 </div>
                 
                 {/* Bottom Accent */}
