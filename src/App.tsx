@@ -84,6 +84,15 @@ const projects = [
     fullDesc: 'A comprehensive WordPress product platform for high-end security hardware, including 1080p full HD systems, wireless camera kits, and heat-sensing tech.',
     tech: ['WordPress', 'WooCommerce', 'PHP'],
     img: 'https://lh3.googleusercontent.com/d/1i0Aez_JjBGFXxQwmarZM6X8SLxpWkHbG=s1000'
+  },
+  { 
+    id: 9,
+    name: 'Adidas I Am Original', 
+    url: 'studio88iamoriginal.co.za', 
+    desc: 'Interactive brand campaign hub',
+    fullDesc: 'A bespoke high-engagement platform built for the Adidas "I Am Original" campaign in partnership with Studio 88. Focuses on storytelling, cultural relevance, and interactive user experiences.',
+    tech: ['WordPress', 'HTML', 'CSS', 'JS'],
+    img: 'https://images.unsplash.com/photo-1520256862855-398228c41684?auto=format&fit=crop&q=80&w=1200'
   }
 ];
 
